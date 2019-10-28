@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  XboxController[] joysticks = new XboxController[16];
+  XboxController controller;
   Spark[] sparks = new Spark[16];
 	/**
    * This function is run when the robot is first started up and should be
@@ -38,8 +38,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     for(int i =0;i<16;i++){
       sparks[i] = new Spark(i);
-    joysticks[i] = new XboxController(i);
     }
+    controller = new XboxController(0);
   }
 
   /**
@@ -86,18 +86,40 @@ public class Robot extends TimedRobot {
         break;
     }
   }
+  @Override
+  public void teleopInit() {
+    new Thread(()->{
+      for(;;){
+        log();
+      }
+    }).start();
+  }
 
+  public void log(){
+    for(int i = 0;i<controller.getAxisCount();i++){
+      System.out.println(i+": "+controller.getRawAxis(i));
+    }
+  }
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
-    double rotation = joysticks[0].getX();
-    System.out.print(rotation+"    the thingy\n");
-      sparks[0].set(joysticks[0].getX());
-      sparks[1].set(joysticks[1].getX());
-      sparks[2].set(joysticks[2].getX());
-      sparks[3].set(joysticks[3].getX());
+      sparks[0].set(
+        // controller.getRawAxis(0)+
+        // controller.getRawAxis(1)+
+        // controller.getRawAxis(2)+
+        // controller.getRawAxis(3)+
+        // controller.getRawAxis(4)+
+        // controller.getRawAxis(5)+
+        // controller.getRawAxis(6)+
+        // controller.getRawAxis(7)+
+        // controller.getRawAxis(8)+
+        // controller.getRawAxis(9)+
+        // controller.getRawAxis(10)+
+        // controller.getRawAxis(11)
+        1
+      );
   }
   /**
    * This function is called periodically during test mode.
