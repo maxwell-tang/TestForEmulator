@@ -90,14 +90,17 @@ public class Robot extends TimedRobot {
   /**
    * This function is called periodically during operator control.
    */
+  //raw axis inputs: 
+  //0 is horizontal on left stick
+  //1 is vertical on left stick
+  //3 is horizontal on right stick
+  //4 is vertical on right stick
   @Override
   public void teleopPeriodic() {
-    double rotation = joysticks[0].getX();
-    System.out.print(rotation+"    the thingy\n");
-      sparks[0].set(joysticks[0].getX());
-      sparks[1].set(joysticks[1].getX());
-      sparks[2].set(joysticks[2].getX());
-      sparks[3].set(joysticks[3].getX());
+    for(int i =0;i<10;i++){
+      double rawAxis = joysticks[0].getRawAxis(i);
+      sparks[i].set(rawAxis);
+    }
   }
   /**
    * This function is called periodically during test mode.
