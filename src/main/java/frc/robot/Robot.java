@@ -97,12 +97,17 @@ public class Robot extends TimedRobot {
   //4 is vertical on right stick
   //negative on channel 0 is right backward
   //positive on channel 1 is left forward
+  //right trigger is turbo
+  //left trigger is reverse turbo
   @Override
   public void teleopPeriodic() {
+    //getting input
     double rotation = joystick.getRawAxis(3);
     double acceleration = joystick.getRawAxis(4);
-    sparks[0].set(rotation+acceleration);  
-    sparks[1].set(rotation-acceleration);
+    double turbo = joystick.getRawAxis(2);
+    //actualy sending input to the sparks
+    sparks[0].set((rotation+acceleration)*(0.25+turbo));  
+    sparks[1].set((rotation-acceleration)*(0.25+turbo));
     
   }
   /**
