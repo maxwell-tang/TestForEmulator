@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  XboxController[] joysticks = new XboxController[16];
+  XboxController joystick;
   Spark[] sparks = new Spark[16];
 	/**
    * This function is run when the robot is first started up and should be
@@ -36,9 +36,9 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    joystick = new XboxController(0);
     for(int i =0;i<16;i++){
       sparks[i] = new Spark(i);
-    joysticks[i] = new XboxController(i);
     }
   }
 
@@ -95,12 +95,15 @@ public class Robot extends TimedRobot {
   //1 is vertical on left stick
   //3 is horizontal on right stick
   //4 is vertical on right stick
+  //negative on channel 0 is right backward
+  //positive on channel 1 is left forward
   @Override
   public void teleopPeriodic() {
-    for(int i =0;i<10;i++){
-      double rawAxis = joysticks[0].getRawAxis(i);
-      sparks[i].set(rawAxis);
-    }
+    double rotation = joystick.getRawAxis(3);
+    double acceleration = joystick.getRawAxis(4);
+    sparks[0].set(rotation+acceleration);  
+    sparks[1].set(rotation-acceleration);
+    
   }
   /**
    * This function is called periodically during test mode.
