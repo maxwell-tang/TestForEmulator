@@ -25,7 +25,9 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  XboxController controller;
+  XboxController joystick;
+  XboxController otherJoystick;
+  XboxController otherJoystick2;
   Spark[] sparks = new Spark[16];
 	/**
    * This function is run when the robot is first started up and should be
@@ -36,10 +38,12 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    joystick = new XboxController(0);
+    otherJoystick = new XboxController(1);
+    otherJoystick2 = new XboxController(2);
     for(int i =0;i<16;i++){
       sparks[i] = new Spark(i);
     }
-    controller = new XboxController(0);
   }
 
   /**
@@ -54,7 +58,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
   }
 
-  /**
+  /*
    * This autonomous (along with the chooser code above) shows how to select
    * between different autonomous modes using the dashboard. The sendable
    * chooser code works with the Java SmartDashboard. If you prefer the
@@ -86,40 +90,30 @@ public class Robot extends TimedRobot {
         break;
     }
   }
-  @Override
-  public void teleopInit() {
-    new Thread(()->{
-      for(;;){
-        log();
-      }
-    }).start();
-  }
 
-  public void log(){
-    for(int i = 0;i<controller.getAxisCount();i++){
-      System.out.println(i+": "+controller.getRawAxis(i));
-    }
-  }
   /**
    * This function is called periodically during operator control.
    */
+  //raw axis inputs: 
+  //0 is horizontal on left stick
+  //1 is vertical on left stick
+  //3 is horizontal on right stick
+  //4 is vertical on right stick
+  //negative on channel 0 is right backward
+  //positive on channel 1 is left forward
+  //right trigger is turbo
+  //left trigger is reverse turbo
+  //this makes it so that the first controller plugged in is responsible for rotation(hirizontal left stick) and the second one is responsible for straight movement(vertical right stick)
   @Override
   public void teleopPeriodic() {
-      sparks[0].set(
-        // controller.getRawAxis(0)+
-        // controller.getRawAxis(1)+
-        // controller.getRawAxis(2)+
-        // controller.getRawAxis(3)+
-        // controller.getRawAxis(4)+
-        // controller.getRawAxis(5)+
-        // controller.getRawAxis(6)+
-        // controller.getRawAxis(7)+
-        // controller.getRawAxis(8)+
-        // controller.getRawAxis(9)+
-        // controller.getRawAxis(10)+
-        // controller.getRawAxis(11)
-        1
-      );
+    //getting input
+    double rotation = joystick.getRawAxis(0);
+    double acceleration = otherJoystick2.getRawAxis(4);
+    double turbo = joystick.getRawAxis(2);
+    //actualy sending input to the sparks
+    sparks[0].set((rotation+acceleration)*(0.25+turbo));  
+    sparks[1].set((rotation-acceleration)*(0.25+turbo));
+    
   }
   /**
    * This function is called periodically during test mode.
