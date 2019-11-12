@@ -26,6 +26,8 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   XboxController joystick;
+  XboxController otherJoystick;
+  XboxController otherJoystick2;
   Spark[] sparks = new Spark[16];
 	/**
    * This function is run when the robot is first started up and should be
@@ -37,6 +39,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     joystick = new XboxController(0);
+    otherJoystick = new XboxController(1);
+    otherJoystick2 = new XboxController(2);
     for(int i =0;i<16;i++){
       sparks[i] = new Spark(i);
     }
@@ -54,7 +58,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
   }
 
-  /**
+  /*
    * This autonomous (along with the chooser code above) shows how to select
    * between different autonomous modes using the dashboard. The sendable
    * chooser code works with the Java SmartDashboard. If you prefer the
@@ -99,11 +103,12 @@ public class Robot extends TimedRobot {
   //positive on channel 1 is left forward
   //right trigger is turbo
   //left trigger is reverse turbo
+  //this makes it so that the first controller plugged in is responsible for rotation(hirizontal left stick) and the second one is responsible for straight movement(vertical right stick)
   @Override
   public void teleopPeriodic() {
     //getting input
-    double rotation = joystick.getRawAxis(3);
-    double acceleration = joystick.getRawAxis(4);
+    double rotation = joystick.getRawAxis(0);
+    double acceleration = otherJoystick2.getRawAxis(4);
     double turbo = joystick.getRawAxis(2);
     //actualy sending input to the sparks
     sparks[0].set((rotation+acceleration)*(0.25+turbo));  
