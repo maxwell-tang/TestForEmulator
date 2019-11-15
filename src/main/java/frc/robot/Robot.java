@@ -24,10 +24,8 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
+  //
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  XboxController joystick;
-  XboxController otherJoystick;
-  XboxController otherJoystick2;
   Spark[] sparks = new Spark[16];
 	/**
    * This function is run when the robot is first started up and should be
@@ -35,12 +33,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    //i actually dont know what these do
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    joystick = new XboxController(0);
-    otherJoystick = new XboxController(1);
-    otherJoystick2 = new XboxController(2);
+    //initialize inputs
+    Input.init();
     for(int i =0;i<16;i++){
       sparks[i] = new Spark(i);
     }
@@ -106,13 +104,17 @@ public class Robot extends TimedRobot {
   //this makes it so that the first controller plugged in is responsible for rotation(hirizontal left stick) and the second one is responsible for straight movement(vertical right stick)
   @Override
   public void teleopPeriodic() {
-    //getting input
-    double rotation = joystick.getRawAxis(0);
-    double acceleration = otherJoystick2.getRawAxis(4);
-    double turbo = joystick.getRawAxis(2);
+    //updating input
+    Input.update();
+    //setting a multiplier for turbo
+    double turboMultiplier = 0.25;
+    //setting the multiplier higher if turbo is activates
+    if(Input.turbo){
+      turboMultiplier = 1;
+    }
     //actualy sending input to the sparks
-    sparks[0].set((rotation+acceleration)*(0.25+turbo));  
-    sparks[1].set((rotation-acceleration)*(0.25+turbo));
+    sparks[0].set((Input.rotation-Input.acceleration)*turboMultiplier);  
+    sparks[1].set((Input.rotation+Input.acceleration)*turboMultiplier);
     
   }
   /**
